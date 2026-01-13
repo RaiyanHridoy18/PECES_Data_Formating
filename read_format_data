@@ -1,0 +1,12 @@
+##
+
+## to read the a cvs file which contains all the raw/unstructured content
+#load the python csv package
+import csv
+#use with_open and set the read mode
+with open('sea_ice_data.csv', mode='r') as raw_datafile:
+    df=csv.reader(raw_datafile) #automatically closed the file
+    for lines in df:
+        print(lines) #print every rows of the file
+
+##

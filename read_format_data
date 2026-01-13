@@ -1,12 +1,73 @@
-##
+## attemt to read file using pandas which gone wrong!
 
-## to read the a cvs file which contains all the raw/unstructured content
+import pandas as pd
+df=pd.read_csv('sea_ice_data.csv')
+df
+##Error: ParserError: Error tokenizing data. C error: Expected 2 fields in line 5, saw 3
+
+## To read the a cvs file which contains all the raw/unstructured content
 #load the python csv package
 import csv
 #use with_open and set the read mode
 with open('sea_ice_data.csv', mode='r') as raw_datafile:
-    df=csv.reader(raw_datafile) #automatically closed the file
+    df2=csv.reader(raw_datafile) #automatically closed the file
     for lines in df:
         print(lines) #print every rows of the file
 
-##
+## To extract the unstructured metadata and save it as txt file.
+with open('sea_ice_data.csv', mode='r') as file:
+    csvFile = csv.reader(file)
+    metadata = list(csvFile)[:4] #first four rows
+print(metadata)
+#saving the metadata in txt file
+with open('sea_ice_metadata.txt', 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerows(metadata)
+
+##To remove the metadata and extract the actual data in csv
+with open('sea_ice_data.csv', mode='r') as file:
+    csvFile = csv.reader(file)
+    data = list(csvFile)[4:] ##started from the 5th row
+print(data)
+#saving the actual data without the metadata in csv
+with open('sea_ice_data_without_trouble_maker.csv', 'w', newline='') as file:
+    writer = csv.writer(file)
+    writer.writerows(data)
+
+##Reading the newly saved csv file with Pandas
+import pandas as pd
+df3=pd.read_csv('sea_ice_data_without_trouble_maker.csv')
+#removing the invalid values and leave them empty from two
+df3.replace(-9999, '', inplace=True) #remove the -9999 from all the rows
+df3['Value'].replace(-9999, '', inplace=True) #remove the -9999 from speicifc one colummn
+df3[['Value', 'Anomaly']].replace(-9999, '', inplace=True) #remove the -9999 from more than one column
+print(df3)
+#saving the output in a csv file
+df3.to_csv('sea_ice_data_without_trouble_maker_and_cleaned.csv', index=False)
+
+##reading newly pure cleaned file
+df4=pd.read_csv('sea_ice_data_without_trouble_maker_and_cleaned.csv')
+print(df4)
+df4 = df3[(df3['Date'] >= 1990) & (df3['Date'] <= 2025)] #slicing data from speicfic date to another specific date
+#using OLS method to calculate the slope and trendline
+from scipy import stats
+x=df4['Date']
+y=df4['Value']
+slope, intercept, r_value, p_value, std_err = stats.linregress(x, y)
+line = slope*x+intercept
+
+##plotting using matlplotlib
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(figsize=(8,8))
+
+ax.plot(df4['Date'], df4['Value'], label='Value', color='Blue')
+ax.plot(df4['Date'], line, label='Trendline for the Value', color='Blue')
+ax.plot(df4['Date'], df4['Anomaly'], label='Anomaly', color='Red')
+ax.set_ylabel('values', fontsize=20)
+ax.set_ylim(-10, 10)
+ax.set_xlabel('Date', fontsize=20)
+ax.set_ylabel('Anomaly', fontsize=20)
+ax.tick_params(axis='both', labelsize=20)
+ax.legend ()
+plt.show

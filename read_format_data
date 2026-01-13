@@ -41,6 +41,8 @@ df3=pd.read_csv('sea_ice_data_without_trouble_maker.csv')
 df3.replace(-9999, '', inplace=True) #remove the -9999 from all the rows
 df3['Value'].replace(-9999, '', inplace=True) #remove the -9999 from speicifc one colummn
 df3[['Value', 'Anomaly']].replace(-9999, '', inplace=True) #remove the -9999 from more than one column
+# or remove those rows that conatin -9999
+df3[(df3['value'] != -9999) & (df3['anomaly'] != -9999)]
 print(df3)
 #saving the output in a csv file
 df3.to_csv('sea_ice_data_without_trouble_maker_and_cleaned.csv', index=False)

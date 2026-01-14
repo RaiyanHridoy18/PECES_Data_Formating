@@ -1,3 +1,5 @@
+df2.describe() #get the summary stats in python too
+
 ## attemt to read file using pandas which gone wrong!
 
 import pandas as pd
@@ -14,7 +16,7 @@ with open('sea_ice_data.csv', mode='r') as raw_datafile:
     for lines in df:
         print(lines) #print every rows of the file
 
-## To extract the unstructured metadata and save it as txt file.
+## To also see the first few lines instead of showing all the lines and extract the unstructured metadata and save it as txt file.
 with open('sea_ice_data.csv', mode='r') as file:
     csvFile = csv.reader(file)
     metadata = list(csvFile)[:4] #first four rows
@@ -50,6 +52,7 @@ df3.to_csv('sea_ice_data_without_trouble_maker_and_cleaned.csv', index=False)
 ##reading newly pure cleaned file
 df4=pd.read_csv('sea_ice_data_without_trouble_maker_and_cleaned.csv')
 print(df4)
+df4['Date'] = pd.to_datetime(df4['Date'], format='%Y/%m')
 df4 = df3[(df3['Date'] >= 1990) & (df3['Date'] <= 2025)] #slicing data from speicfic date to another specific date
 #using OLS method to calculate the slope and trendline
 from scipy import stats
